@@ -111,6 +111,9 @@ while running:
     if page == -1:
         display_msg("Human Benchmark", title, (255, 255, 255), 500, scroll+170)
         pygame.draw.rect(screen, (230, 232, 244), pygame.Rect(0, scroll+410, 1003, 1200))
+
+        pygame.draw.rect(screen, (254,146,69), pygame.Rect(997, 0, 6, (scroll / 1040) * -500))
+
         for rect in range(8):
             if option[rect].collidepoint((x, y)):
                 hover = rect
