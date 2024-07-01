@@ -9,6 +9,7 @@ pygame.font.init()
 title = pygame.font.SysFont('Raleway Bold', 130)   # Big message
 text = pygame.font.SysFont('Comic Sans MS', 25)   # Instruction
 key_instr = pygame.font.SysFont('Times New Roman', 25)   # Further instructions
+back_text = pygame.font.SysFont('Comic Sans MS', 300)   # Background text
 
 # Screen
 screen = pygame.display.set_mode((1003, 500))
@@ -112,6 +113,10 @@ while running:
                                     game_message = "Level " + str(len(game_memory))
                                     score_keeper[2] = 0
                                     game_status = 2
+
+                    elif page == 2:
+                        if game_status == 1:
+                            score_keeper[2] = 1
 
                 elif hover != None:
                     page = hover
@@ -259,6 +264,59 @@ while running:
             score_keeper = [0, 0, -1, 0, -1]
             display_msg("Sequence Memory", title, (255, 255, 255), 500, 100)
             display_msg("Memorise the increasing pattern!", text, (255, 255, 255), 500, 220)
+            display_msg("Press enter to start", key_instr, (255, 255, 255), 500, 320)
+            display_msg("Press escape to go back", key_instr, (255, 255, 255), 500, 355)
+
+    elif page == 2:
+
+        if game_start:
+
+            if game_status == 0:
+
+                score_keeper[1] += 1
+
+                display_msg(str(3 - (score_keeper[1]//60)), back_text, (255, 255, 255), 500, 50)
+
+                if score_keeper[1] == 180:
+                    score_keeper[1] = 0
+                    game_status = 1
+
+            elif game_status == 1:
+
+                display_msg(str(30 - game_memory), back_text, (149, 195, 232), 500, 50)
+                score_keeper[1] += 1
+
+                if score_keeper[0]:
+                    target_x = random.randint(41, 959)
+                    target_y = random.randint(26, 474)
+                    score_keeper[0] = 0
+
+                pygame.draw.circle(screen, (149, 195, 232), (target_x, target_y), 42)
+                for i in range(1, 4):
+                    pygame.draw.circle(screen, (255, 255, 255), (target_x, target_y), i * 14, 2 + i)
+
+                if score_keeper[2]:
+                    score_keeper[2] = 0
+                    x_dif = (x - target_x) ** 2
+                    y_dif = (y - target_y) ** 2
+                    total_dif = math.sqrt(x_dif + y_dif)
+                    if total_dif < 42:
+                        game_memory += 1
+                        score_keeper[0] = 1
+
+                if game_memory == 30:
+                    game_message = str(math.floor((score_keeper[1] * 100)/(FPS * 3))) + " ms"
+                    game_status = 2
+
+            else:
+                display_msg(game_message, title, (255, 255, 255), 500, 200)
+                display_msg("Press enter to continue", key_instr, (255, 255, 255), 500, 320)
+
+        else:
+            game_memory = 0
+            score_keeper = [1, 0, 0]
+            display_msg("Aim Trainer", title, (255, 255, 255), 500, 100)
+            display_msg("Hit 30 targets as quickly as you can!", text, (255, 255, 255), 500, 220)
             display_msg("Press enter to start", key_instr, (255, 255, 255), 500, 320)
             display_msg("Press escape to go back", key_instr, (255, 255, 255), 500, 355)
 
