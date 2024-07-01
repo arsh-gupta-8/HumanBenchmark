@@ -105,9 +105,12 @@ while running:
                                         score_keeper[0] = 0
                                         game_status = 0
                                         score_keeper[1] = 0
+                                    else:
+                                        score_keeper[2] = -2
 
                                 else:
                                     game_message = "Level " + str(len(game_memory))
+                                    score_keeper[2] = 0
                                     game_status = 2
 
                 elif hover != None:
@@ -212,7 +215,6 @@ while running:
 
                 if score_keeper[1] == len(game_memory):
                     score_keeper[4] = -1
-                    score_keeper[2] = -1
                     game_status = 1
                     continue
 
@@ -223,6 +225,14 @@ while running:
                         pygame.draw.rect(screen, (34,108,180), sequence_boxes[rect])
 
             elif game_status == 1:
+
+                if score_keeper[2] >= 8:
+                    screen.fill((43, 135, 209))
+                elif score_keeper[2] == -2:
+                    score_keeper[2] += 1
+                else:
+                    screen.fill((62, 180, 137))
+                    score_keeper[2] += 1
 
                 display_msg("Level " + str(len(game_memory)), text, (255, 255, 255), 500, 50)
 
@@ -237,10 +247,12 @@ while running:
                     score_keeper[3] = None
 
             else:
+                score_keeper[2] += 1
+                if score_keeper[2] < 50:
+                    screen.fill((231, 13, 1))
+
                 display_msg(game_message, title, (255, 255, 255), 500, 200)
                 display_msg("Press enter to continue", key_instr, (255, 255, 255), 500, 320)
-                score_keeper = -1
-                game_memory = -1
 
         else:
             game_memory = []
