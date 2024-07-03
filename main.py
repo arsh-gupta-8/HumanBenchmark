@@ -11,6 +11,7 @@ text = pygame.font.SysFont('Comic Sans MS', 25)   # Instruction
 key_instr = pygame.font.SysFont('Times New Roman', 25)   # Further instructions
 back_text = pygame.font.SysFont('Comic Sans MS', 300)   # Background text
 medium_text = pygame.font.SysFont('Comic Sans MS', 100)   # Big representation
+words_rep = pygame.font.SysFont('Comic Sans MS', 75)   # Word show
 
 # Screen
 screen = pygame.display.set_mode((1003, 500))
@@ -41,6 +42,34 @@ game_start = None
 game_status = -1
 game_memory = -1
 game_message = ''
+words_list = [
+    "wanderlust", "enthusiasm", "sophisticated", "capricious", "equilibrium",
+    "constellation", "megalopolis", "circumstance", "melancholy", "ambidextrous",
+    "sophomore", "melodramatic", "catastrophe", "kaleidoscope", "hippopotamus",
+    "serendipity", "phenomenon", "chronological", "photographic", "vegetarian",
+    "appreciation", "magnificent", "metamorphosis", "photorealistic",
+    "heterogeneous", "bibliophile", "gastronomy", "cryptocurrency",
+    "sustainability", "meticulous", "pharmaceutical", "introspection",
+    "megalithic", "philanthropic", "nostalgia", "constellation", "innovative",
+    "compassionate", "meticulously", "photojournalist", "heterogeneity",
+    "bibliomania", "gastronomic", "decentralized", "phenomenally",
+    "introspectively", "megalith", "philanthropist", "photorealism",
+    "heterocyclic", "bibliographer", "gourmet", "cryptographically",
+    "phenomenality", "introverted", "megaliths", "philanthropy", "photosynthesis",
+    "heterocyclics", "bibliography", "gastronomer", "cryptographer",
+    "phenomenalize", "introversion", "megalithicly", "philanthropies",
+    "photosynthetic", "heterocyclically", "bibliophilic", "epicurean",
+    "cryptographic", "phenomenalizes", "introductory", "megalithicism",
+    "philanthropically", "photosynthesized", "heterocyclicness",
+    "bibliophobia", "gastronomically", "cryptographers", "phenomenalizing",
+    "introspectiveness", "megalithicize", "philanthropization",
+    "photosynthesizing", "heterocyclically", "bibliophileism",
+    "gastronomies", "cryptographically", "phenomenalizations",
+    "introspectivist", "megalithicization", "philanthropizations",
+    "photosynthetically", "heterocyclicness", "bibliophobic",
+    "gastronomist", "cryptographers", "phenomenalize",
+    "introspectivity", "megalithicize",
+]
 
 # Sequence Memory Game exclusive settings
 sequence_boxes = []
@@ -146,6 +175,24 @@ while running:
                     elif page == 2:
                         if game_status == 1:
                             score_keeper[2] = 1
+
+                    elif page == 4:
+                        if game_status == 0:
+                            if score_keeper[3]:
+                                if score_keeper[2] in score_keeper[1]:
+                                    game_memory -= 1
+                                else:
+                                    score_keeper[5] += 1
+                            elif score_keeper[3] == 0:
+                                if score_keeper[2] not in score_keeper[1]:
+                                    game_memory -= 1
+                                else:
+                                    score_keeper[5] += 1
+
+                            score_keeper[1].append(score_keeper[2])
+                            score_keeper[0] = 1
+
+
 
                 elif hover != None:
                     page = hover
@@ -396,6 +443,54 @@ while running:
             score_keeper = [0, 1, -1, "", 0]
             display_msg("Number Memory", title, (255, 255, 255), 500, 100)
             display_msg("How many digits can you remember?", text, (255, 255, 255), 500, 220)
+            display_msg("Press enter to start", key_instr, (255, 255, 255), 500, 320)
+            display_msg("Press escape to go back", key_instr, (255, 255, 255), 500, 355)
+
+    elif page == 4:
+
+        if game_start:
+
+            if game_status == 0:
+                if game_memory > 0:
+                    if score_keeper[0]:
+                        score_keeper[0] = 0
+                        if len(score_keeper[1]) > 3 and random.randint(1, 4) == 1:
+                            score_keeper[2] = random.choice(score_keeper[1])
+                        else:
+                            score_keeper[2] = random.choice(words_list)
+                    else:
+                        display_msg("lives: " + str(game_memory), key_instr, (255, 255, 255), 500, 130)
+                        display_msg(score_keeper[2], words_rep, (255, 255, 255), 500, 170)
+                        buttons = []
+                        for i in range(2):
+                            buttons.append(pygame.Rect(350 + i * 200, 310, 100, 40))
+
+                        for button in range(2):
+                            if buttons[button].collidepoint((x, y)):
+                                pygame.draw.rect(screen, (239,195,72), buttons[button])
+                                score_keeper[3] = button
+                            else:
+                                pygame.draw.rect(screen, (255,209,84), buttons[button])
+
+                        display_msg("SEEN", key_instr, (0, 0, 0), 400, 316)
+                        display_msg("NEW", key_instr, (0, 0, 0), 601, 316)
+
+                        if screen.get_at((x, y)) == (43, 135, 209):
+                            score_keeper[3] = None
+
+                else:
+                    game_message = str(score_keeper[5]) + " words"
+                    game_status = 2
+
+            else:
+                display_msg(game_message, title, (255, 255, 255), 500, 200)
+                display_msg("Press enter to continue", key_instr, (255, 255, 255), 500, 320)
+
+        else:
+            game_memory = 3
+            score_keeper = [1, [], "", None, -1, 0]
+            display_msg("Verbal Memory", title, (255, 255, 255), 500, 100)
+            display_msg("Have you already seen this word or not?", text, (255, 255, 255), 500, 220)
             display_msg("Press enter to start", key_instr, (255, 255, 255), 500, 320)
             display_msg("Press escape to go back", key_instr, (255, 255, 255), 500, 355)
 
