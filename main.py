@@ -10,6 +10,7 @@ title = pygame.font.SysFont('Raleway Bold', 130)   # Big message
 text = pygame.font.SysFont('Comic Sans MS', 25)   # Instruction
 key_instr = pygame.font.SysFont('Times New Roman', 25)   # Further instructions
 back_text = pygame.font.SysFont('Comic Sans MS', 300)   # Background text
+medium_text = pygame.font.SysFont('Comic Sans MS', 100)   # Big representation
 
 # Screen
 screen = pygame.display.set_mode((1003, 500))
@@ -69,6 +70,10 @@ while running:
             if event.key == pygame.K_RETURN and page != -1:
                 game_start = True
 
+                if page == 3 and game_status == 1:
+                    game_status = 0
+                    score_keeper[4] = 1
+
                 if game_status == 2:
                     game_start = False
                     game_status = -1
@@ -76,12 +81,36 @@ while running:
                 else:
                     game_status = 0
 
-            if event.key == pygame.K_ESCAPE:
+            elif event.key == pygame.K_ESCAPE:
                 page = -1
                 game_status = -1
                 game_start = None
                 game_memory = -1
                 score_keeper = -1
+
+            elif page == 3 and game_status == 1:
+                if event.key == pygame.K_1:
+                    score_keeper[3] += "1"
+                elif event.key == pygame.K_2:
+                    score_keeper[3] += "2"
+                elif event.key == pygame.K_3:
+                    score_keeper[3] += "3"
+                elif event.key == pygame.K_4:
+                    score_keeper[3] += "4"
+                elif event.key == pygame.K_5:
+                    score_keeper[3] += "5"
+                elif event.key == pygame.K_6:
+                    score_keeper[3] += "6"
+                elif event.key == pygame.K_7:
+                    score_keeper[3] += "7"
+                elif event.key == pygame.K_8:
+                    score_keeper[3] += "8"
+                elif event.key == pygame.K_9:
+                    score_keeper[3] += "9"
+                elif event.key == pygame.K_0:
+                    score_keeper[3] += "0"
+                elif event.key == pygame.K_BACKSPACE and len(score_keeper[3]) > 0:
+                    score_keeper[3] = score_keeper[3][:-1]
 
         if event.type == pygame.MOUSEBUTTONUP:
 
@@ -317,6 +346,56 @@ while running:
             score_keeper = [1, 0, 0]
             display_msg("Aim Trainer", title, (255, 255, 255), 500, 100)
             display_msg("Hit 30 targets as quickly as you can!", text, (255, 255, 255), 500, 220)
+            display_msg("Press enter to start", key_instr, (255, 255, 255), 500, 320)
+            display_msg("Press escape to go back", key_instr, (255, 255, 255), 500, 355)
+
+    elif page == 3:
+
+        if game_start:
+
+            if game_status == 0:
+                if score_keeper[4]:
+                    print(len(score_keeper[3]) > 0 and game_memory == int(score_keeper[3]))
+                    if len(score_keeper[3]) > 0 and game_memory == int(score_keeper[3]):
+                        score_keeper[1] = 1
+                        score_keeper[2] = 0
+                        score_keeper[3] = ""
+                        score_keeper[4] = 0
+                    else:
+                        game_status = 2
+                        game_message = str(len(str(game_memory)) - 1) + " digits"
+                else:
+
+                    if score_keeper[1]:
+                        score_keeper[1] = 0
+                        score_keeper[0] += 1
+                        min = int("1" + "0" * (score_keeper[0] - 1))
+                        max = int("1" + "0" * score_keeper[0]) - 1
+                        game_memory = random.randint(min, max)
+                        time = 60 + score_keeper[0] * 30
+
+                    score_keeper[2] += 1
+
+                    display_msg(str(game_memory), medium_text, (255, 255, 255), 500, 150)
+                    bar_length = math.floor(300 * (1 - (score_keeper[2] / time)))
+                    pygame.draw.rect(screen, (255, 255, 255), pygame.Rect(350, 280, bar_length, 8))
+
+                    if score_keeper[2] == time:
+                        game_status = 1
+
+            elif game_status == 1:
+                display_msg("Type in the number", key_instr, (255, 255, 255), 500, 140)
+                display_msg(score_keeper[3], medium_text, (255, 255, 255), 500, 150)
+
+            else:
+                display_msg(game_message, title, (255, 255, 255), 500, 200)
+                display_msg("Press enter to continue", key_instr, (255, 255, 255), 500, 320)
+
+        else:
+            game_memory = 0
+            score_keeper = [0, 1, -1, "", 0]
+            display_msg("Number Memory", title, (255, 255, 255), 500, 100)
+            display_msg("How many digits can you remember?", text, (255, 255, 255), 500, 220)
             display_msg("Press enter to start", key_instr, (255, 255, 255), 500, 320)
             display_msg("Press escape to go back", key_instr, (255, 255, 255), 500, 355)
 
