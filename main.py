@@ -12,6 +12,7 @@ key_instr = pygame.font.SysFont('Times New Roman', 25)   # Further instructions
 back_text = pygame.font.SysFont('Comic Sans MS', 300)   # Background text
 medium_text = pygame.font.SysFont('Comic Sans MS', 100)   # Big representation
 words_rep = pygame.font.SysFont('Comic Sans MS', 75)   # Word show
+box_num = pygame.font.SysFont('Raleway Bold', 60)   # Number in box
 
 # Screen
 screen = pygame.display.set_mode((1003, 500))
@@ -103,7 +104,10 @@ while running:
                     game_status = 0
                     score_keeper[4] = 1
 
-                if game_status == 2:
+                elif page == 5 and game_status == 1:
+                    game_status = 0
+
+                elif game_status == 2:
                     game_start = False
                     game_status = -1
 
@@ -192,7 +196,16 @@ while running:
                             score_keeper[1].append(score_keeper[2])
                             score_keeper[0] = 1
 
-
+                    elif page == 5:
+                        if game_status == 0:
+                            if score_keeper[3] is not None:
+                                if score_keeper[3] == 0:
+                                    cords_list.pop(0)
+                                else:
+                                    game_memory -= 1
+                                    if game_memory != 0:
+                                        game_status = 1
+                                        score_keeper[0] = 1
 
                 elif hover != None:
                     page = hover
@@ -491,6 +504,85 @@ while running:
             score_keeper = [1, [], "", None, -1, 0]
             display_msg("Verbal Memory", title, (255, 255, 255), 500, 100)
             display_msg("Have you already seen this word or not?", text, (255, 255, 255), 500, 220)
+            display_msg("Press enter to start", key_instr, (255, 255, 255), 500, 320)
+            display_msg("Press escape to go back", key_instr, (255, 255, 255), 500, 355)
+
+    elif page == 5:
+
+        if game_start:
+
+            if game_status == 0:
+                if game_memory > 0:
+                    if score_keeper[0]:
+                        cords_list = []
+                        score_keeper[0] = 0
+                        repeat = True
+                        while repeat:
+                            x_cord = random.randint(0, 7)
+                            y_cord = random.randint(0, 4)
+                            if [x_cord, y_cord] not in cords_list:
+                                cords_list.append([x_cord, y_cord])
+                                if len(cords_list) == score_keeper[1]:
+                                    repeat = False
+
+                    else:
+                        if len(cords_list) == score_keeper[1]:
+                            score_keeper[2] = 1
+                        else:
+                            score_keeper[2] = 0
+
+                        cords_xy = []
+                        rects = []
+
+                        for i in range(len(cords_list)):
+                            x_pos = 145 + 90 * cords_list[i][0]
+                            y_pos = 20 + 90 * cords_list[i][1]
+                            cords_xy.append([x_pos, y_pos])
+
+                        for i in range(len(cords_list)):
+                            rects.append(pygame.Rect(cords_xy[i][0], cords_xy[i][1], 80, 80))
+
+                        for draw in range(len(rects)):
+                            if score_keeper[2]:
+                                pygame.draw.rect(screen, (42, 134, 208), rects[draw], border_radius=8)
+                                display_msg(str(draw + 1), box_num, (255, 255, 255), cords_xy[draw][0] + 40, cords_xy[draw][1] + 20)
+                                if rects[draw].collidepoint((x, y)):
+                                    pygame.draw.rect(screen, (149,195,232), rects[draw], 6, 8)
+                                    score_keeper[3] = draw
+                                else:
+                                    pygame.draw.rect(screen, (65, 147, 214), rects[draw], 6, 8)
+
+                            else:
+                                if rects[draw].collidepoint((x, y)):
+                                    pygame.draw.rect(screen, (245,245,245), rects[draw], border_radius = 8)
+                                    score_keeper[3] = draw
+                                else:
+                                    pygame.draw.rect(screen, (255, 255, 255), rects[draw], border_radius= 8)
+
+                        if screen.get_at((x, y)) == (43, 135, 209):
+                            score_keeper[3] = None
+
+                    if len(cords_list) == 0:
+                        score_keeper[1] += 1
+                        score_keeper[0] = 1
+
+                else:
+                    game_message = str(score_keeper[1]) + " numbers"
+                    game_status = 2
+
+            elif game_status == 1:
+                display_msg(f"{game_memory} lives left", words_rep, (255, 255, 255), 500, 160)
+                display_msg("Press enter to continue", key_instr, (255, 255, 255), 500, 320)
+
+            else:
+                display_msg(game_message, title, (255, 255, 255), 500, 200)
+                display_msg("Press enter to continue", key_instr, (255, 255, 255), 500, 320)
+
+        else:
+            game_memory = 3
+            score_keeper = [1, 4, 1, None]
+            display_msg("Chimp Test", title, (255, 255, 255), 500, 100)
+            display_msg("Remember the order of the squares", text, (255, 255, 255), 500, 220)
             display_msg("Press enter to start", key_instr, (255, 255, 255), 500, 320)
             display_msg("Press escape to go back", key_instr, (255, 255, 255), 500, 355)
 
