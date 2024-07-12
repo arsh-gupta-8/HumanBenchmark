@@ -207,6 +207,14 @@ while running:
                                         game_status = 1
                                         score_keeper[0] = 1
 
+                    elif page == 6:
+                        if game_status == 1:
+                            score_keeper[6].append(hover)
+                            if hover in square_pos:
+                                temp_pos.remove(hover)
+                            else:
+                                score_keeper[7] += 1
+
                 elif hover != None:
                     page = hover
                     hover = None
@@ -583,6 +591,110 @@ while running:
             score_keeper = [1, 4, 1, None]
             display_msg("Chimp Test", title, (255, 255, 255), 500, 100)
             display_msg("Remember the order of the squares", text, (255, 255, 255), 500, 220)
+            display_msg("Press enter to start", key_instr, (255, 255, 255), 500, 320)
+            display_msg("Press escape to go back", key_instr, (255, 255, 255), 500, 355)
+
+    elif page == 6:
+
+        if game_start:
+
+            if game_status == 0:
+                if game_memory > 0:
+
+                    if score_keeper[2]:
+                        score_keeper[0] += 1
+                        score_keeper[1] += 1
+                        if score_keeper[1] == 3:
+                            score_keeper[1] = 0
+                            score_keeper[3] += 1
+                        squares = score_keeper[0] + 2
+                        score_keeper[2] = 0
+
+
+                    if score_keeper[5]:
+                        square_pos = []
+                        while len(square_pos) != squares:
+                            new_num = random.randint(0, score_keeper[3]**2 - 1)
+                            if new_num not in square_pos:
+                                square_pos.append(new_num)
+                        temp_pos = square_pos.copy()
+                        score_keeper[5] = 0
+                        cord_inter = (440 - score_keeper[3]*10) // score_keeper[3]
+
+                    else:
+                        g6_sp = []
+                        for i in range(score_keeper[3]):
+                            for j in range(score_keeper[3]):
+                                g6_sp.append(pygame.Rect(275 + j * (cord_inter + 10), 60 + i * (cord_inter + 10), cord_inter, cord_inter))
+
+                        for i in range(len(g6_sp)):
+
+                            if i in square_pos:
+                                pygame.draw.rect(screen, (255, 255, 255), g6_sp[i])
+                            else:
+                                pygame.draw.rect(screen, (37,115,193), g6_sp[i])
+
+                        display_msg(f"Level {score_keeper[0]}", box_num, (255, 255, 255), 345, 10)
+                        display_msg(f"Lives: {game_memory}", box_num, (255, 255, 255), 620, 10)
+
+                    score_keeper[4] += 1
+                    if score_keeper[4] == 90:
+                        game_status = 1
+                        score_keeper[4] = 0
+                        score_keeper[5] = 1
+                        score_keeper[6] = []
+                        score_keeper[7] = 0
+
+                else:
+                    game_message = "Level " + str(score_keeper[0])
+                    game_status = 2
+
+            elif game_status == 1:
+                g6_sp = []
+                for i in range(score_keeper[3]):
+                    for j in range(score_keeper[3]):
+                        g6_sp.append(
+                            pygame.Rect(275 + j * (cord_inter + 10), 60 + i * (cord_inter + 10), cord_inter, cord_inter))
+
+                for i in range(len(g6_sp)):
+                    if i in square_pos:
+                        pygame.draw.rect(screen, (255, 255, 255), g6_sp[i])
+                    else:
+                        pygame.draw.rect(screen, (21,67,104), g6_sp[i])
+
+                for i in range(len(g6_sp)):
+                    if i in score_keeper[6]:
+                        continue
+                    elif g6_sp[i].collidepoint((x, y)):
+                        pygame.draw.rect(screen, (47,125,203), g6_sp[i])
+                        hover = i
+                    else:
+                        pygame.draw.rect(screen, (37, 115, 193), g6_sp[i])
+
+                display_msg(f"Level {score_keeper[0]}", box_num, (255, 255, 255), 345, 10)
+                display_msg(f"Lives: {game_memory}", box_num, (255, 255, 255), 620, 10)
+
+                if screen.get_at((x, y)) == (43,135,209):
+                    hover = None
+
+                if len(temp_pos) == 0:
+                    score_keeper[2] = 1
+                    game_status = 0
+
+                if score_keeper[7] == 3:
+                    game_status = 0
+                    game_memory -= 1
+
+            else:
+                display_msg(game_message, title, (255, 255, 255), 500, 200)
+                display_msg("Press enter to continue", key_instr, (255, 255, 255), 500, 320)
+
+        else:
+            game_memory = 3
+            score_keeper = [0, 1, 1, 3, 0, 1, [], 0]
+            # level - continuous - new level - square output - timer - square positions - clicked
+            display_msg("Visual Memory", title, (255, 255, 255), 500, 100)
+            display_msg("Remember which squares were white", text, (255, 255, 255), 500, 220)
             display_msg("Press enter to start", key_instr, (255, 255, 255), 500, 320)
             display_msg("Press escape to go back", key_instr, (255, 255, 255), 500, 355)
 
